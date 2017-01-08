@@ -32,7 +32,7 @@ class TempManager:
     def _c_to_f(t):
         return (t * 1.8) + 32
 
-    def get_temp(self, c=True):
+    def get_temp(self, c=False):
         t = (
                 self.sense.get_temperature_from_humidity() +
                 self.sense.get_temperature_from_pressure()
@@ -55,7 +55,7 @@ def main():
         "Temp: {t} Humidity: {h} Pressure {p}".format(
             t=round(temp_manager.get_temp(), 0),
             h=round(sense.get_humidity(), 0),
-            p = round(millibars_to_in(sense.get_pressure()), 2)
+            p=round(millibars_to_in(sense.get_pressure()), 2)
         )
     )
 
