@@ -1,4 +1,5 @@
 import os
+import time
 
 from sense_hat import SenseHat
 
@@ -49,7 +50,7 @@ class TempManager:
 def main():
     sense = SenseHat()
     temp_manager = TempManager(sense)
-    event = sense.stick.wait_for_event()
+    # event = sense.stick.wait_for_event()
     # if event.direction == 'push':
     sense.show_message(
         "Temp: {t} Humidity: {h} Pressure {p}".format(
@@ -60,7 +61,7 @@ def main():
     )
 
 
-
 if __name__ == '__main__':
     while True:
         main()
+        time.sleep(30)
