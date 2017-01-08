@@ -50,14 +50,14 @@ def main():
     sense = SenseHat()
     temp_manager = TempManager(sense)
     event = sense.stick.wait_for_event()
-    if event.direction == 'push':
-        sense.show_message(
-            "Temp: {t} Humidity: {h} Pressure {p}".format(
-                t=round(temp_manager.get_temp(), 0),
-                h=round(sense.get_humidity(), 0),
-                p = round(millibars_to_in(sense.get_pressure()), 2)
-            )
+    # if event.direction == 'push':
+    sense.show_message(
+        "Temp: {t} Humidity: {h} Pressure {p}".format(
+            t=round(temp_manager.get_temp(), 0),
+            h=round(sense.get_humidity(), 0),
+            p = round(millibars_to_in(sense.get_pressure()), 2)
         )
+    )
 
 
 
