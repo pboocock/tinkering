@@ -1,6 +1,7 @@
 import datetime
 import os
 import sys
+import traceback
 from urllib import urlencode
 import urllib2
 
@@ -66,7 +67,7 @@ class Weather:
         self.sense.clear()
         self.sense.show_message(
             "Starting up",
-            text_colour=[255, 255, 0],
+            text_colour=[255, 255, 255],
             back_colour=[0, 0, 255]
         )
 
@@ -89,13 +90,10 @@ class Weather:
             "humidity": str(self.sense.get_humidity()),
             "baromin": str(millibars_to_in(self.sense.get_pressure())),
         }
-        try:
-            upload_url = Constants.WU_URL + "?" + urlencode(weather_data)
-            with urllib2.urlopen(upload_url) as response:
-                html = response.read()
-                print("Server response:", html)
-        except:
-            print("Exception:", sys.exc_info()[0])
+        upload_url = Constants.WU_URL + "?" + urlencode(weather_data)
+        with urllib2.urlopen(upload_url) as response:
+            html = response.read()
+            print("Server response:", html)
 
     def _measure_and_upload(self):
         self.current_second = datetime.datetime.now().second
@@ -117,8 +115,8 @@ class Weather:
         ):
             self.sense.show_message(
                 "Uploading to WUnderground",
-                text_colour=[255, 255, 0],
-                back_colour=[0, 0, 255]
+                text_colour=[255, 255, 255],
+                back_colour=[0, 100, 0]
             )
             self._upload()
 
@@ -139,14 +137,10 @@ class Weather:
                 print("\nExiting application\n")
 
 
-def main():
-    weather_manager = Weather()
-    weather_manager.run()
-
-
 if __name__ == '__main__':
     try:
-        main()
+        weather_manager = Weather()
+        weather_manager.run()
     except:
-        print("Exception:", sys.exc_info()[0])
+        print traceback.format_exc()
 
