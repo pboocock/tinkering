@@ -11,13 +11,14 @@ from temp_manager import TempManager
 from config import Constants
 
 
+# Create images for upload success and failure
 b = [0, 0, 255]  # blue
 r = [255, 0, 0]  # red
 e = [0, 0, 0]  # empty
 w = [255, 255, 255] # white
 dg = [0, 100, 0] # dark green
-# create images for up and down arrows
-success = [
+
+blue_check = [
     b, b, b, b, b, b, b, b,
     b, b, b, b, b, b, b, w,
     b, b, b, b, b, b, w, w,
@@ -27,7 +28,7 @@ success = [
     b, w, w, w, b, b, b, b,
     b, b, w, b, b, b, b, b,
 ]
-failure = [
+red_x = [
     w, r, r, r, r, r, r, w,
     r, w, r, r, r, r, w, r,
     r, r, w, r, r, w, r, r,
@@ -81,12 +82,12 @@ class Weather:
         response = urllib2.urlopen(upload_url)
         html = response.read()
         if 'success' in html:
-            self.sense.set_pixels(success)
+            self.sense.set_pixels(blue_check)
         else:
-            self.sense.set_pixels(failure)
+            self.sense.set_pixels(red_x)
         response.close()
 
-    def _measure_and_upload(self):
+    def _measure(self):
         self.current_second = datetime.datetime.now().second
         self.current_minute = datetime.datetime.now().minute
 
@@ -110,7 +111,7 @@ class Weather:
         self.last_second = self.current_second
         self.last_minute = self.current_minute
 
-    def signal_term_handler(self, signal, frame):
+    def _sigterm_handler(self, signal, frame):
         self.sense.show_message("SIGTERM", text_colour=w, back_colour=r)
         self.sense.clear()
         sys.exit(0)
@@ -118,8 +119,8 @@ class Weather:
     def run(self):
         while True:
             try:
-                signal.signal(signal.SIGTERM, self.signal_term_handler)
-                self._measure_and_upload()
+                signal.signal(signal.SIGTERM, self._sigterm_handler)
+                self._measure()
             except KeyboardInterrupt:
                 self.sense.show_message("Bye", text_colour=w, back_colour=r)
                 self.sense.clear()
