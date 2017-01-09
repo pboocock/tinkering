@@ -10,6 +10,32 @@ from sense_hat import SenseHat
 from config import Constants
 
 
+b = [0, 0, 255]  # blue
+r = [255, 0, 0]  # red
+e = [0, 0, 0]  # empty
+w = [255, 255, 255] # white
+# create images for up and down arrows
+success = [
+    b, b, b, b, b, b, b, b,
+    b, b, b, b, b, b, b, w,
+    b, b, b, b, b, b, w, w,
+    b, b, b, b, b, w, w, b,
+    w, b, b, b, w, w, b, b,
+    w, w, b, w, w, b, b, b,
+    b, w, w, w, b, b, b, b,
+    b, b, w, b, b, b, b, b,
+]
+failure = [
+    w, r, r, r, r, r, r, w,
+    r, w, r, r, r, r, w, r,
+    r, r, w, r, r, w, r, r,
+    r, r, r, w, w, r, r, r,
+    r, r, r, w, w, r, r, r,
+    r, r, w, r, r, w, r, r,
+    r, w, r, r, r, r, w, r,
+    w, r, r, r, r, r, r, w,
+]
+
 
 def millibars_to_in(p):
     return p * 0.0295300
@@ -70,6 +96,7 @@ class Weather:
             text_colour=[255, 255, 255],
             back_colour=[0, 0, 255]
         )
+        self.sense.clear()
 
     def vanity_temp(self):
         self.sense.show_message(
@@ -93,7 +120,10 @@ class Weather:
         upload_url = Constants.WU_URL + "?" + urlencode(weather_data)
         response = urllib2.urlopen(upload_url)
         html = response.read()
-        print("Server response:", html)
+        if 'success' in html:
+            self.sense.set_pixels(success)
+        else:
+            self.sense.set_pixels(failure)
         response.close()
 
     def _measure_and_upload(self):
@@ -120,6 +150,7 @@ class Weather:
                 back_colour=[0, 100, 0]
             )
             self._upload()
+            self.sense.clear()
 
         self.last_second = self.current_second
         self.last_minute = self.current_minute
