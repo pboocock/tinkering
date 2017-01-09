@@ -94,8 +94,8 @@ class Weather:
         self.current_minute = datetime.datetime.now().minute
 
         if len(self.sense.stick.get_events()) > 0:
-            self._upload()
             self.vanity_temp()
+            self._upload()
 
         if (
             self.current_second % Constants.MEASUREMENT_INTERVAL == 0 and
