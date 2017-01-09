@@ -84,6 +84,7 @@ class Weather:
         if 'success' in html:
             self.sense.set_pixels(blue_check)
         else:
+            print(html)
             self.sense.set_pixels(red_x)
         response.close()
 
