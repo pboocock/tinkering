@@ -1,5 +1,5 @@
 import datetime
-import os
+import signal
 import sys
 import traceback
 from urllib import urlencode
@@ -7,6 +7,7 @@ import urllib2
 
 from sense_hat import SenseHat
 
+from temp_manager import TempManager
 from config import Constants
 
 
@@ -14,6 +15,7 @@ b = [0, 0, 255]  # blue
 r = [255, 0, 0]  # red
 e = [0, 0, 0]  # empty
 w = [255, 255, 255] # white
+dg = [0, 100, 0] # dark green
 # create images for up and down arrows
 success = [
     b, b, b, b, b, b, b, b,
@@ -41,45 +43,6 @@ def millibars_to_in(p):
     return p * 0.0295300
 
 
-# use moving average to smooth readings
-class TempManager:
-    def __init__(self, sense, n=3):
-        self.sense = sense
-        self.temp_list = []
-        self.n = n
-
-    @staticmethod
-    def cpu_temp():
-        return float(
-            os.popen('vcgencmd measure_temp').readline().replace(
-                "temp=", ""
-            ).replace("'C\n", "")
-        )
-
-    @staticmethod
-    def c_to_f(t):
-        return (t * 1.8) + 32
-
-    def _smooth(self, t):
-        self.temp_list.insert(0, t)
-        if len(self.temp_list) > self.n:
-            self.temp_list.pop()
-        return sum(self.temp_list) / len(self.temp_list)
-
-    def get_temp(self, c=False):
-        t = (
-                self.sense.get_temperature_from_humidity() +
-                self.sense.get_temperature_from_pressure()
-            ) / 2
-        t_corr = t - (
-            (self.cpu_temp() - t) / 1.5
-        )
-        if c:
-            return self._smooth(t_corr)
-        else:
-            return self.c_to_f(self._smooth(t_corr))
-
-
 class Weather:
     def __init__(self):
         self.sense = SenseHat()
@@ -92,11 +55,7 @@ class Weather:
         self.last_second = datetime.datetime.now().second
 
         self.sense.clear()
-        self.sense.show_message(
-            "Starting up",
-            text_colour=[255, 255, 255],
-            back_colour=[0, 0, 255]
-        )
+        self.sense.show_message("Starting up", text_colour=w, back_colour=b)
         self.sense.clear()
 
     def vanity_temp(self):
@@ -145,26 +104,24 @@ class Weather:
             self.current_minute != self.last_minute and
             Constants.WEATHER_UPLOAD
         ):
-            self.sense.show_message(
-                "Uploading",
-                text_colour=[255, 255, 255],
-                back_colour=[0, 100, 0]
-            )
+            self.sense.show_message("Uploading", text_colour=w, back_colour=dg)
             self._upload()
 
         self.last_second = self.current_second
         self.last_minute = self.current_minute
 
+    def signal_term_handler(self, signal, frame):
+        self.sense.show_message("SIGTERM", text_colour=w, back_colour=r)
+        self.sense.clear()
+        sys.exit(0)
+
     def run(self):
         while True:
             try:
+                signal.signal(signal.SIGTERM, self.signal_term_handler)
                 self._measure_and_upload()
             except KeyboardInterrupt:
-                self.sense.show_message(
-                    "Bye :(",
-                    text_colour=[255, 255, 255],
-                    back_colour=[255, 0, 0]
-                )
+                self.sense.show_message("Bye", text_colour=w, back_colour=r)
                 self.sense.clear()
                 print("\nExiting application\n")
                 sys.exit(0)
