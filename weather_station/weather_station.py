@@ -95,7 +95,6 @@ class Weather:
 
         if len(self.sense.stick.get_events()) > 0:
             self.vanity_temp()
-            self._upload()
 
         if (
             self.current_second % Constants.MEASUREMENT_INTERVAL == 0 and
