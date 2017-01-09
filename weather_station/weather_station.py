@@ -69,6 +69,7 @@ class Weather:
         )
 
     def _upload(self):
+        self.sense.show_message("Uploading", text_colour=w, back_colour=dg)
         weather_data = {
             "action": "updateraw",
             "ID": Constants.STATION_ID,
@@ -107,7 +108,6 @@ class Weather:
             self.current_minute != self.last_minute and
             Constants.WEATHER_UPLOAD
         ):
-            self.sense.show_message("Uploading", text_colour=w, back_colour=dg)
             self._upload()
 
         self.last_second = self.current_second
