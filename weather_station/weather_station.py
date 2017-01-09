@@ -85,7 +85,6 @@ class Weather:
         html = response.read()
         if 'success' in html:
             self.sense.set_pixels(blue_check)
-            sleep(10)
             self.sense.clear()
         else:
             print(html)
@@ -104,6 +103,7 @@ class Weather:
             self.current_second != self.last_second
         ):
             self.temp_manager.get_temp()
+            self.sense.clear()  # Never leave anything on the screen too long
 
         if (
             self.current_minute % Constants.UPLOAD_INTERVAL == 0 and
