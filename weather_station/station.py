@@ -150,7 +150,6 @@ class Weather:
                 back_colour=[0, 100, 0]
             )
             self._upload()
-            self.sense.clear()
 
         self.last_second = self.current_second
         self.last_minute = self.current_minute
@@ -167,6 +166,7 @@ class Weather:
                 )
                 self.sense.clear()
                 print("\nExiting application\n")
+                sys.exit(0)
 
 
 if __name__ == '__main__':
