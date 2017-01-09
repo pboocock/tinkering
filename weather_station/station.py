@@ -83,6 +83,7 @@ class TempManager:
 class Weather:
     def __init__(self):
         self.sense = SenseHat()
+        self.sense.low_light = True
         self.temp_manager = TempManager(self.sense)
 
         self.current_minute = datetime.datetime.now().minute
