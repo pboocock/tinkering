@@ -91,9 +91,10 @@ class Weather:
             "baromin": str(millibars_to_in(self.sense.get_pressure())),
         }
         upload_url = Constants.WU_URL + "?" + urlencode(weather_data)
-        with urllib2.urlopen(upload_url) as response:
-            html = response.read()
-            print("Server response:", html)
+        response = urllib2.urlopen(upload_url)
+        html = response.read()
+        print("Server response:", html)
+        response.close()
 
     def _measure_and_upload(self):
         self.current_second = datetime.datetime.now().second
@@ -114,7 +115,7 @@ class Weather:
             Constants.WEATHER_UPLOAD
         ):
             self.sense.show_message(
-                "Uploading to WUnderground",
+                "Uploading",
                 text_colour=[255, 255, 255],
                 back_colour=[0, 100, 0]
             )
