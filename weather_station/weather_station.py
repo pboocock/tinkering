@@ -2,8 +2,9 @@ import datetime
 import signal
 import sys
 import traceback
-from urllib import urlencode
 import urllib2
+from time import sleep
+from urllib import urlencode
 
 from sense_hat import SenseHat
 
@@ -84,6 +85,8 @@ class Weather:
         html = response.read()
         if 'success' in html:
             self.sense.set_pixels(blue_check)
+            sleep(10)
+            self.sense.clear()
         else:
             print(html)
             self.sense.set_pixels(red_x)
