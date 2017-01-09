@@ -85,7 +85,6 @@ class Weather:
         html = response.read()
         if 'success' in html:
             self.sense.set_pixels(blue_check)
-            self.sense.clear()
         else:
             print(html)
             self.sense.set_pixels(red_x)
@@ -138,4 +137,3 @@ if __name__ == '__main__':
         weather_manager.run()
     except:
         print traceback.format_exc()
-
